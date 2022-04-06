@@ -92,8 +92,8 @@ export default class ActiveNoteTitlePlugin extends Plugin {
         friendlyBasename = file.name;
       }
       template = {
-        'parentpath': (file.parent).path,
-        'filepath': file.path,
+        'parentpath': (file.parent).path.replace("/",this.settings.pathStr),
+        'filepath': file.path.replace("/",this.settings.pathStr),
         'filename': file.name,
         'basename': friendlyBasename,
         'extension': file.extension,
@@ -329,6 +329,22 @@ class ActiveNoteTitlePluginSettingsTab extends PluginSettingTab {
           this.plugin.refreshTitle();
         });
       });
+
+      new Setting(containerEl)
+        .setName('Path separator string')
+        .setDesc('Select a string to be used to separate items in the path.')
+        .addDropdown((dropdown) => {
+          dropdown.addOption('/', '/ (Forward Slash)');
+          dropdown.addOption('\\', '\\ (Backslash)');
+          dropdown.addOption('--', '-- (Double Dash)');
+          dropdown.addOption('—', '— (Em Dash)');
+          dropdown.setValue(this.plugin.settings.pathStr);
+          dropdown.onChange((option) => {
+            this.plugin.settings.pathStr = option;
+            this.plugin.saveData(this.plugin.settings);
+            this.plugin.refreshTitle();
+          });
+        });
 
   }
 }
